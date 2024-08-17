@@ -1,0 +1,42 @@
+#!/bin/zsh
+
+PROJECT_PATH="${HOME}/Projects/tools/qmk_firmware"
+BUILD_PATH="${PROJECT_PATH}/.build"
+KEYBOARD_MOUNT_PATH="/Volumes/RPI-RP2/"
+
+
+MY_KEYBOARD="splitkb/aurora/corne/rev1"
+#MY_KEYMAP="pyinto_homerow_debug"
+MY_KEYMAP="jack"
+
+BUILD_NAME="${MY_KEYBOARD//\//_}_${MY_KEYMAP//\//_}.uf2"
+
+
+build() {
+    qmk compile -kb ${MY_KEYBOARD} -km ${MY_KEYMAP}
+}
+
+
+flush() {
+    cp ${BUILD_PATH}/${BUILD_NAME} ${KEYBOARD_MOUNT_PATH}
+}
+
+
+ACTION=$1
+if [ -z $ACTION ]; then
+    echo "Building and flushing..."
+    build
+    flush
+    echo "Built and flushed!"
+
+elif [ $ACTION = "build" ]; then
+    echo "Building..."
+    build
+    echo "Built!"
+
+elif [ $ACTION = "flush" ]; then
+    echo "Flushing..."
+    flush
+    echo "Flushed!"
+
+fi
