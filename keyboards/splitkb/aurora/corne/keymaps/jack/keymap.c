@@ -22,7 +22,8 @@ enum layer_names {
   _GAMING,
   _LOWER,
   _RAISE,
-  _ADJUST
+  _ADJUST,
+  _FUNCTION
 };
 
 enum custom_keycodes {
@@ -31,7 +32,8 @@ enum custom_keycodes {
     FKEYS,
     LOWER,
     RAISE,
-    ADJUST
+    ADJUST,
+    FUNCTION
 };
 
 // Left-hand home row mods
@@ -60,10 +62,17 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
      // ⎟---------+---------+---------+---------+---------+---------⎟ ⎟---------+---------+---------+---------+---------+---------⎟
          XXXXXXX ,    KC_Z ,    KC_X ,    KC_C ,    KC_V ,    KC_B ,      KC_N ,    KC_M , KC_COMM ,  KC_DOT , KC_SLSH , KC_BSLS ,
      // ╰---------+---------+---------+---------/---------/---------/ \---------\---------\---------+---------+---------+---------╯
-                                        KC_SPC ,   LOWER,   KC_ENT ,     KC_SPC ,   RAISE,  KC_BSPC
+                                       FUNCTION ,  LOWER,   KC_ENT ,     KC_SPC ,   RAISE,  KC_BSPC
      //                              /_________/_________/_________/   \_________\_________\_________\_
 
      ),
+
+    [_FUNCTION] = LAYOUT_split_3x6_3(
+        _______, _______, _______, _______, KC_A   , _______,                      KC_PAST, KC_F7   , KC_F8   , KC_F9   , KC_PPLS, _______,
+        _______, _______, _______, _______, _______, _______,                      KC_PEQL, KC_F4   , KC_F5   , KC_F6   , KC_0   , KC_PDOT,
+        _______, _______, _______, _______, _______, _______,                      KC_PSLS, KC_F1   , KC_F2   , KC_F3   , KC_MINUS, _______,
+                                         _______, _______, _______,       KC_BSPC, ADJUST, KC_DEL
+        ),
 
     [_FKEYS] = LAYOUT_split_3x6_3(
         _______, _______, _______, _______, KC_A   , _______,                      KC_PAST, KC_7   , KC_8   , KC_9   , KC_PPLS, _______,
@@ -128,6 +137,9 @@ const rgblight_segment_t PROGMEM my_raise_layer[] = RGBLIGHT_LAYER_SEGMENTS(
 const rgblight_segment_t PROGMEM my_adjust_layer[] = RGBLIGHT_LAYER_SEGMENTS(
     {0, 54, HSV_CYAN}
 );
+const rgblight_segment_t PROGMEM my_func_layer[] = RGBLIGHT_LAYER_SEGMENTS(
+    {0, 54, HSV_GREEN}
+);
 
 const rgblight_segment_t* const PROGMEM my_rgb_layers[] = RGBLIGHT_LAYERS_LIST(
     my_qwerty_layer,
@@ -135,7 +147,8 @@ const rgblight_segment_t* const PROGMEM my_rgb_layers[] = RGBLIGHT_LAYERS_LIST(
     my_gaming_layer,
     my_lower_layer,
     my_raise_layer,
-    my_adjust_layer
+    my_adjust_layer,
+    my_func_layer
 );
 
 layer_state_t layer_state_set_user(layer_state_t state) {
@@ -145,6 +158,7 @@ layer_state_t layer_state_set_user(layer_state_t state) {
     rgblight_set_layer_state(3, layer_state_cmp(state, _LOWER));
     rgblight_set_layer_state(4, layer_state_cmp(state, _RAISE));
     rgblight_set_layer_state(5, layer_state_cmp(state, _ADJUST));
+    rgblight_set_layer_state(6, layer_state_cmp(state, _FUNCTION));
     return state;
 }
 
@@ -170,6 +184,13 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
                 layer_on(_LOWER);
             } else {
                 layer_off(_LOWER);
+            }
+            return false;
+        case FUNCTION:
+            if (record->event.pressed) {
+                layer_on(_FUNCTION);
+            } else {
+                layer_off(_FUNCTION);
             }
             return false;
         case FKEYS:
